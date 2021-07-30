@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:controller_layout_id="@layout/exo_custom_controller"
+        app:controller_layout_id="@layout/custom_player_control"
         app:player_layout_id="@layout/exo_player_view">
 
     </com.google.android.exoplayer2.ui.PlayerView>
