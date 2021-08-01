@@ -7,16 +7,22 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.hls.HlsDataSourceFactory;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 import co.smallcademy.livetvapp.models.Channel;
 
@@ -26,6 +32,8 @@ public class Details extends AppCompatActivity {
     TextView description;
     ImageView fullScreen;
     boolean isFullScreen = false;
+    SimpleExoPlayer player;
+    ProgressBar progressBar;
 
 
     @Override
@@ -39,6 +47,7 @@ public class Details extends AppCompatActivity {
 
         playerView = findViewById(R.id.playerView);
         fullScreen = playerView.findViewById(R.id.exo_fullscreen_icon);
+        progressBar = findViewById(R.id.progressBar);
         
         fullScreen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,12 +147,49 @@ public class Details extends AppCompatActivity {
     }
 
     public void playChannel(String live_url){
-        SimpleExoPlayer player = new SimpleExoPlayer.Builder(this).build();
+        player = new SimpleExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
-        MediaItem mediaItem = MediaItem.fromUri(live_url);
-        player.setMediaItem(mediaItem);
-        player.prepare();
-        player.play();
 
+        DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory();
+        HlsMediaSource mediaSource = new HlsMediaSource.Factory(dataSourceFactory).
+                createMediaSource(MediaItem.fromUri(live_url));
+        player.setMediaSource(mediaSource);
+        player.prepare();
+        player.setPlayWhenReady(true);
+        player.addListener(new Player.Listener() {
+            @Override
+            public void onPlaybackStateChanged(int state) {
+                if(state == Player.STATE_READY){
+                    progressBar.setVisibility(View.GONE);
+                    player.setPlayWhenReady(true);
+                }else if(state == Player.STATE_BUFFERING){
+                    progressBar.setVisibility(View.VISIBLE);
+                    playerView.setKeepScreenOn(true);
+                }else {
+                    progressBar.setVisibility(View.GONE);
+                    player.setPlayWhenReady(true);
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        player.seekToDefaultPosition();
+        player.setPlayWhenReady(true);
+    }
+
+    @Override
+    protected void onPause() {
+        player.setPlayWhenReady(false);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        player.release();
+        super.onDestroy();
     }
 }

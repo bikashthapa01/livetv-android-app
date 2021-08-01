@@ -12,8 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LiveTVapp"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Details"
-            android:configChanges="keyboardHidden|orientation|screenSize"></activity>
+        <activity android:name=".CategoryDetails"></activity>
+        <activity android:name=".Categories" />
+        <activity
+            android:name=".Details"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.LiveTVapp.NoActionBar">

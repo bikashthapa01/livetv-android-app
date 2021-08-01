@@ -33,7 +33,10 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ViewHold
         View v;
         if(type.equals("slider")){
              v = LayoutInflater.from(parent.getContext()).inflate(R.layout.big_slider_view,parent,false);
-        }else {
+        }else if(type.equals("details")){
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.details_view,parent,false);
+        }
+        else {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_cat_view,parent,false);
         }
         return new ViewHolder(v);
